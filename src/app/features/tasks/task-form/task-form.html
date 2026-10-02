@@ -1,0 +1,78 @@
+<section class="form-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">{{ isEditing ? 'Editar tarefa' : 'Nova tarefa' }}</p>
+      <h1>{{ isEditing ? 'Atualizar tarefa' : 'Criar tarefa' }}</h1>
+    </div>
+
+    <a class="secondary-button" routerLink="/tasks">Voltar</a>
+  </header>
+
+  @if (loading) {
+    <div class="state-card">
+      <p>Carregando dados da tarefa...</p>
+    </div>
+  } @else {
+    <form class="task-form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field-group">
+        <label class="field">
+          <span>Título *</span>
+          <input type="text" formControlName="title" placeholder="Ex.: Revisar tarefas da semana" />
+        </label>
+
+        @if (fieldError) {
+          <small class="error-text">{{ fieldError }}</small>
+        }
+      </div>
+
+      <label class="field">
+        <span>Descrição</span>
+        <textarea rows="4" formControlName="description" placeholder="Descreva a tarefa..."></textarea>
+      </label>
+
+      <div class="split-row">
+        <label class="field">
+          <span>Categoria *</span>
+          <select formControlName="taskCategory">
+            @for (option of categoryOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Status</span>
+          <select formControlName="taskStatus">
+            @for (option of statusOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Data de entrega *</span>
+        <input type="date" formControlName="dueDate" />
+      </label>
+
+      @if (submitError) {
+        <div class="error-box">
+          {{ submitError }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-box">
+          {{ successMessage }}
+        </div>
+      }
+
+      <div class="actions">
+        <a class="secondary-button" routerLink="/tasks">Cancelar</a>
+        <button class="primary-button" type="submit" [disabled]="loading">
+          {{ isEditing ? 'Salvar alterações' : 'Criar tarefa' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

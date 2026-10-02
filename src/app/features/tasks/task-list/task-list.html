@@ -1,0 +1,84 @@
+<section class="task-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Tarefas</p>
+      <h1>Minhas tarefas</h1>
+    </div>
+
+    <a class="primary-button" routerLink="/tasks/new">+ Nova tarefa</a>
+  </header>
+
+  <div class="filters-panel">
+    <label class="field">
+      <span>Pesquisar</span>
+      <input type="search" [(ngModel)]="filters.title" (ngModelChange)="loadTasks()" placeholder="Buscar tarefa..." />
+    </label>
+
+    <label class="field">
+      <span>Status</span>
+      <select [(ngModel)]="filters.status" (change)="loadTasks()">
+        @for (option of statusOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Categoria</span>
+      <select [(ngModel)]="filters.category" (change)="loadTasks()">
+        @for (option of categoryOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </label>
+
+    <button type="button" class="secondary-button" (click)="clearFilters()">Limpar filtros</button>
+  </div>
+
+  @if (loading) {
+    <div class="state-card">
+      <p>Carregando tarefas...</p>
+    </div>
+  } @else if (error) {
+    <div class="state-card error">
+      <p>{{ error }}</p>
+      <button type="button" class="secondary-button" (click)="loadTasks()">Tentar novamente</button>
+    </div>
+  } @else {
+    <div class="results-bar">
+      <strong>{{ totalItems }} tarefas encontradas</strong>
+    </div>
+
+    @if (tasks.length === 0) {
+      <div class="empty-card">
+        <p>Nenhuma tarefa encontrada.</p>
+      </div>
+    } @else {
+      <div class="task-list">
+        @for (task of tasks; track task.id) {
+          <article class="task-item">
+            <div class="task-header">
+              <div>
+                <span class="task-category">{{ getCategoryLabel(task.taskCategory) }}</span>
+                <h2>{{ task.title }}</h2>
+              </div>
+              <span class="badge status-{{ task.taskStatus }}">{{ getStatusLabel(task.taskStatus) }}</span>
+            </div>
+
+            <p>{{ task.description || 'Sem descrição informada.' }}</p>
+
+            <div class="task-footer">
+              <span>Entrega: {{ task.dueDate || 'Sem data' }}</span>
+
+              <div class="task-actions">
+                <a class="small-button" [routerLink]="['/tasks', task.id, 'edit']">Editar</a>
+                <button type="button" class="small-button accent" (click)="completeTask(task)">Concluir</button>
+                <button type="button" class="small-button danger" (click)="deleteTask(task)">Excluir</button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  }
+</section>

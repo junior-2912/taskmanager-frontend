@@ -1,0 +1,75 @@
+<section class="dashboard-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Dashboard</p>
+      <h1>Olá, Junior</h1>
+      <p class="headline">Aqui está um resumo das suas tarefas.</p>
+    </div>
+
+    <a class="primary-button" routerLink="/tasks/new">+ Nova tarefa</a>
+  </header>
+
+  @if (loading) {
+    <div class="state-card">
+      <p>Carregando tarefas...</p>
+    </div>
+  } @else if (error) {
+    <div class="state-card error">
+      <p>{{ error }}</p>
+      <button type="button" class="secondary-button" (click)="loadDashboard()">Tentar novamente</button>
+    </div>
+  } @else {
+    <div class="stats-grid">
+      <article class="stat-card highlight">
+        <span>Total</span>
+        <strong>{{ totalTasks }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Pendentes</span>
+        <strong>{{ pendingTasks }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Em andamento</span>
+        <strong>{{ inProgressTasks }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Concluídas</span>
+        <strong>{{ finishedTasks }}</strong>
+      </article>
+    </div>
+
+    <section class="task-section">
+      <div class="section-title-row">
+        <h2>Tarefas recentes</h2>
+        <a routerLink="/tasks">Ver todas</a>
+      </div>
+
+      @if (recentTasks.length === 0) {
+        <div class="empty-card">
+          <p>Nenhuma tarefa encontrada.</p>
+        </div>
+      } @else {
+        <div class="recent-list">
+          @for (task of recentTasks; track task.id) {
+            <article class="task-card">
+              <div class="task-card-top">
+                <h3>{{ task.title }}</h3>
+                <span class="badge status-{{ task.taskStatus }}">{{ statusLabels[task.taskStatus] }}</span>
+              </div>
+
+              <p>{{ task.description || 'Sem descrição adicional.' }}</p>
+
+              <div class="task-meta">
+                <span>{{ task.taskCategory }}</span>
+                <span>Entrega: {{ task.dueDate || 'Sem data' }}</span>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

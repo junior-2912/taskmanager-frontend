@@ -1,0 +1,38 @@
+<div class="app-shell" [class.dark-theme]="isDarkTheme">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">T</div>
+      <div>
+        <span class="brand-label">Task</span>
+        <strong>Manager</strong>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Menu principal">
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          [routerLinkActive]="'active'"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+          class="nav-link"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <button class="theme-toggle" type="button" (click)="toggleTheme()" aria-label="Alternar tema">
+      <span>{{ isDarkTheme ? '☀️' : '🌙' }}</span>
+      <span>{{ isDarkTheme ? 'Claro' : 'Escuro' }}</span>
+    </button>
+
+    <div class="sidebar-footer">
+      <p>Planejamento pessoal</p>
+      <strong>Organize o dia</strong>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet />
+  </main>
+</div>
