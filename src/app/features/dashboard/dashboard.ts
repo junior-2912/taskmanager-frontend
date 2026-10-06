@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Task, TaskStatus } from '../../core/models/task.model';
 import { TaskService } from '../../core/services/task';
-
+// TODO - Fix the bug 
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, RouterLink],

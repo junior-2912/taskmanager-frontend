@@ -35,7 +35,7 @@
     <button type="button" class="secondary-button" (click)="clearFilters()">Limpar filtros</button>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="state-card">
       <p>Carregando tarefas...</p>
     </div>
@@ -46,16 +46,16 @@
     </div>
   } @else {
     <div class="results-bar">
-      <strong>{{ totalItems }} tarefas encontradas</strong>
+      <strong>{{ totalItems() }} tarefas encontradas</strong>
     </div>
 
-    @if (tasks.length === 0) {
+    @if (tasks().length === 0) {
       <div class="empty-card">
         <p>Nenhuma tarefa encontrada.</p>
       </div>
     } @else {
       <div class="task-list">
-        @for (task of tasks; track task.id) {
+        @for (task of tasks(); track task.id) {
           <article class="task-item">
             <div class="task-header">
               <div>

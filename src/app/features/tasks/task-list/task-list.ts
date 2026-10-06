@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Task, TaskCategory, TaskStatus } from '../../../core/models/task.model';
@@ -10,14 +10,12 @@ import { TaskService } from '../../../core/services/task';
   imports: [CommonModule, FormsModule, RouterLink],
   styleUrl: './task-list.css',
   templateUrl: './task-list.html',
-  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TaskList implements OnInit {
-  tasks: Task[] = [];
-  loading = false;
+  tasks = signal<Task[]>([]);
+  loading = signal(false);
+  totalItems = signal(0);
   error = '';
-  totalItems = 0;
-
   readonly statusOptions: Array<{ value: string; label: string }> = [
     { value: '', label: 'Todos os status' },
     { value: 'PENDING', label: 'Pendente' },
@@ -50,7 +48,7 @@ export class TaskList implements OnInit {
   loadTasks(): void {
 
     console.log('LOAD TASKS FOI CHAMADO');
-    this.loading = true;
+    this.loading.set(true);
     this.error = '';
 
     this.taskService
@@ -63,9 +61,10 @@ export class TaskList implements OnInit {
       })
       .subscribe({
         next: (page) => {
-          this.tasks = page.content ?? [];
-          this.totalItems = page.page?.totalElements ?? 0;
-          this.loading = false;
+          console.log('RESPOSTA DA API:', page);
+          this.tasks.set(page.content ?? []);
+          this.totalItems.set(page.page?.totalElements ?? 0);
+          this.loading.set(false);
 
           console.log('ESTADO FINAL:', {
             tasks: this.tasks,
@@ -77,7 +76,7 @@ export class TaskList implements OnInit {
         error: (err) => {
           console.log('ERRO', err)
           this.error = 'Não foi possível carregar as tarefas.';
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }
