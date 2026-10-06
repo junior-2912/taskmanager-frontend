@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Task, TaskCategory, TaskStatus } from '../../../core/models/task.model';
@@ -10,6 +10,7 @@ import { TaskService } from '../../../core/services/task';
   imports: [CommonModule, FormsModule, RouterLink],
   styleUrl: './task-list.css',
   templateUrl: './task-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TaskList implements OnInit {
   tasks: Task[] = [];
@@ -40,13 +41,15 @@ export class TaskList implements OnInit {
     category: '',
   };
 
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   ngOnInit(): void {
     this.loadTasks();
   }
 
   loadTasks(): void {
+
+    console.log('LOAD TASKS FOI CHAMADO');
     this.loading = true;
     this.error = '';
 
@@ -61,10 +64,18 @@ export class TaskList implements OnInit {
       .subscribe({
         next: (page) => {
           this.tasks = page.content ?? [];
-          this.totalItems = page.totalElements ?? 0;
+          this.totalItems = page.page?.totalElements ?? 0;
           this.loading = false;
+
+          console.log('ESTADO FINAL:', {
+            tasks: this.tasks,
+            loading: this.loading,
+            totalItems: this.totalItems
+          });
+
         },
-        error: () => {
+        error: (err) => {
+          console.log('ERRO', err)
           this.error = 'Não foi possível carregar as tarefas.';
           this.loading = false;
         },

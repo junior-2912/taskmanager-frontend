@@ -12,10 +12,12 @@ export interface Task {
 
 export interface TaskPage {
   content: Task[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 export interface TaskCreateRequest {
