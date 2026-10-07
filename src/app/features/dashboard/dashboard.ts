@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Task, TaskStatus } from '../../core/models/task.model';
 import { TaskService } from '../../core/services/task';
@@ -11,8 +11,8 @@ import { TaskService } from '../../core/services/task';
   templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {
-  tasks: Task[] = [];
-  loading = false;
+  tasks = signal<Task[]>([]);
+  loading = signal(false);
   error = '';
 
   readonly statusLabels: Record<TaskStatus, string> = {
@@ -29,37 +29,37 @@ export class Dashboard implements OnInit {
   }
 
   get totalTasks(): number {
-    return this.tasks.length;
+    return this.tasks().length;
   }
 
   get pendingTasks(): number {
-    return this.tasks.filter((task) => task.taskStatus === 'PENDING').length;
+    return this.tasks().filter((task) => task.taskStatus === 'PENDING').length;
   }
 
   get inProgressTasks(): number {
-    return this.tasks.filter((task) => task.taskStatus === 'IN_PROGRESS').length;
+    return this.tasks().filter((task) => task.taskStatus === 'IN_PROGRESS').length;
   }
 
   get finishedTasks(): number {
-    return this.tasks.filter((task) => task.taskStatus === 'FINISHED').length;
+    return this.tasks().filter((task) => task.taskStatus === 'FINISHED').length;
   }
 
   get recentTasks(): Task[] {
-    return this.tasks.slice(0, 3);
+    return this.tasks().slice(0, 3);
   }
 
   private loadDashboard(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.error = '';
 
     this.taskService.list({ size: 50 }).subscribe({
       next: (page) => {
-        this.tasks = page.content ?? [];
-        this.loading = false;
+        this.tasks.set(page.content ?? []); 
+        this.loading.set(false);
       },
       error: () => {
         this.error = 'Não foi possível carregar o resumo das tasks.';
-        this.loading = false;
+        this.loading.set(false);
       },
     });
   }

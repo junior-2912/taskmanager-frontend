@@ -9,7 +9,7 @@
     <a class="primary-button" routerLink="/tasks/new">+ Nova tarefa</a>
   </header>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="state-card">
       <p>Carregando tarefas...</p>
     </div>
