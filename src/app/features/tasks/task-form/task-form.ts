@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TaskCategory, TaskStatus } from '../../../core/models/task.model';
@@ -14,7 +14,7 @@ import { TaskService } from '../../../core/services/task';
 export class TaskForm implements OnInit {
   taskId: number | null = null;
   isEditing = false;
-  loading = false;
+  loading = signal(false);
   submitError = '';
   successMessage = '';
 
@@ -57,13 +57,16 @@ export class TaskForm implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("TaskId: ", this.taskId);
     if (!this.taskId) {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     this.taskService.getById(this.taskId).subscribe({
       next: (task) => {
+        console.log('ANTES DO PATCH');
+
         this.form.patchValue({
           title: task.title,
           description: task.description ?? '',
@@ -71,11 +74,15 @@ export class TaskForm implements OnInit {
           taskStatus: task.taskStatus,
           dueDate: task.dueDate ?? '',
         });
-        this.loading = false;
+
+        console.log('ANTES DO LOADING FALSE');
+        this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erro ao buscar task:', err);
+
         this.submitError = 'Não foi possível carregar a tarefa para edição.';
-        this.loading = false;
+        this.loading.set(false);
       },
     });
   }
@@ -87,7 +94,7 @@ export class TaskForm implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     this.submitError = '';
     this.successMessage = '';
 
@@ -115,7 +122,7 @@ export class TaskForm implements OnInit {
           this.finishSubmit();
         },
         error: () => {
-          this.loading = false;
+          this.loading.set(false);
           this.submitError = 'Não foi possível atualizar a tarefa.';
         },
       });
@@ -137,14 +144,14 @@ export class TaskForm implements OnInit {
         this.finishSubmit();
       },
       error: () => {
-        this.loading = false;
+        this.loading.set(false);
         this.submitError = 'Não foi possível criar a tarefa.';
       },
     });
   }
 
   private finishSubmit(errorMessage?: string): void {
-    this.loading = false;
+    this.loading.set(false);
     this.submitError = errorMessage ?? '';
     this.successMessage = this.taskId ? 'Tarefa atualizada com sucesso.' : 'Tarefa criada com sucesso.';
 

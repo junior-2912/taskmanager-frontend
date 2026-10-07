@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Task, TaskCategory, TaskStatus } from '../../../core/models/task.model';
@@ -47,7 +47,6 @@ export class TaskList implements OnInit {
 
   loadTasks(): void {
 
-    console.log('LOAD TASKS FOI CHAMADO');
     this.loading.set(true);
     this.error = '';
 
@@ -61,20 +60,11 @@ export class TaskList implements OnInit {
       })
       .subscribe({
         next: (page) => {
-          console.log('RESPOSTA DA API:', page);
           this.tasks.set(page.content ?? []);
           this.totalItems.set(page.page?.totalElements ?? 0);
           this.loading.set(false);
-
-          console.log('ESTADO FINAL:', {
-            tasks: this.tasks,
-            loading: this.loading,
-            totalItems: this.totalItems
-          });
-
         },
-        error: (err) => {
-          console.log('ERRO', err)
+        error: () => {
           this.error = 'Não foi possível carregar as tarefas.';
           this.loading.set(false);
         },
@@ -98,6 +88,11 @@ export class TaskList implements OnInit {
   }
 
   deleteTask(task: Task): void {
+    if (!this.canDeleteTask(task)) {
+      this.error = this.getDeleteErrorMessage(task);
+      return;
+    }
+
     const confirmed = window.confirm(`Deseja excluir a tarefa "${task.title}"?`);
 
     if (!confirmed) {
@@ -105,9 +100,70 @@ export class TaskList implements OnInit {
     }
 
     this.taskService.delete(task.id).subscribe({
-      next: () => this.loadTasks(),
-      error: () => this.error = 'Não foi possível excluir a tarefa.',
+      next: () => {
+        this.error = '';
+        this.loadTasks();
+      },
+      error: (err) => {
+        this.error = this.getDeleteErrorMessage(task, err);
+      },
     });
+  }
+
+  private canDeleteTask(task: Task): boolean {
+    return task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED';
+  }
+
+  private extractApiErrorMessage(error: unknown): string {
+    if (!error || typeof error !== 'object') {
+      return '';
+    }
+
+    const candidate = error as {
+      error?: unknown;
+      message?: unknown;
+      statusText?: string;
+    };
+
+    const directMessage = candidate.message;
+    if (typeof directMessage === 'string' && directMessage.trim()) {
+      return directMessage;
+    }
+
+    const responseError = candidate.error;
+    if (responseError && typeof responseError === 'object') {
+      const responsePayload = responseError as {
+        message?: unknown;
+        error?: unknown;
+        details?: unknown;
+      };
+
+      const nestedMessage = responsePayload.message ?? responsePayload.error ?? responsePayload.details;
+      if (typeof nestedMessage === 'string' && nestedMessage.trim()) {
+        return nestedMessage;
+      }
+    }
+
+    if (candidate.statusText && candidate.statusText.trim()) {
+      return candidate.statusText;
+    }
+
+    return '';
+  }
+
+  private getDeleteErrorMessage(task: Task, error?: unknown): string {
+    const apiMessage = this.extractApiErrorMessage(error ?? {});
+    const blockingMessage = 'Não é possível excluir uma tarefa que ainda não está concluída ou cancelada. A API só permite remover tarefas com status finalizado ou cancelado.';
+
+    if (!this.canDeleteTask(task) || /pendente|pending|em andamento|in_progress|não.*final|not.*finished|cancelada|canceled/i.test(apiMessage)) {
+      return blockingMessage;
+    }
+
+    if (apiMessage) {
+      return apiMessage;
+    }
+
+    return 'Não foi possível excluir a tarefa.';
   }
 
   getStatusLabel(status: TaskStatus): string {

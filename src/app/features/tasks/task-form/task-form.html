@@ -8,7 +8,9 @@
     <a class="secondary-button" routerLink="/tasks">Voltar</a>
   </header>
 
-  @if (loading) {
+  
+
+  @if (loading()) {
     <div class="state-card">
       <p>Carregando dados da tarefa...</p>
     </div>
@@ -69,7 +71,7 @@
 
       <div class="actions">
         <a class="secondary-button" routerLink="/tasks">Cancelar</a>
-        <button class="primary-button" type="submit" [disabled]="loading">
+        <button class="primary-button" type="submit" [disabled]="loading()">
           {{ isEditing ? 'Salvar alterações' : 'Criar tarefa' }}
         </button>
       </div>
