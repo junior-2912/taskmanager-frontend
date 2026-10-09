@@ -44,7 +44,7 @@
 
         <label class="field">
           <span>Status</span>
-          <select formControlName="taskStatus">
+          <select formControlName="taskStatus" [disabled]="isTaskLocked()">
             @for (option of statusOptions; track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }
@@ -54,7 +54,7 @@
 
       <label class="field">
         <span>Data de entrega *</span>
-        <input type="date" formControlName="dueDate" />
+        <input type="date" formControlName="dueDate" [min]="todayValue" />
       </label>
 
       @if (submitError) {

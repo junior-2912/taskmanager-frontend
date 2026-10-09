@@ -1,14 +1,14 @@
 .app-shell {
   --bg-page: #f8f1eb;
-  --bg-surface: rgba(255, 255, 255, 0.72);
-  --bg-surface-strong: rgba(255, 255, 255, 0.92);
+  --bg-surface: rgba(255, 255, 255, 0.82);
+  --bg-surface-strong: rgba(255, 255, 255, 0.96);
   --bg-sidebar: linear-gradient(180deg, #3d1d28 0%, #2a171f 100%);
-  --border-soft: rgba(101, 68, 73, 0.08);
+  --border-soft: rgba(101, 68, 73, 0.14);
   --text: #2b1d20;
   --muted: #6f5a5a;
   --sidebar-text: #f9efe9;
   --sidebar-muted: rgba(249, 239, 233, 0.72);
-  --shadow-soft: 0 14px 30px rgba(74, 31, 43, 0.08);
+  --shadow-soft: 0 16px 34px rgba(74, 31, 43, 0.1);
 
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);

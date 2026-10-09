@@ -15,6 +15,7 @@ export class TaskList implements OnInit {
   tasks = signal<Task[]>([]);
   loading = signal(false);
   totalItems = signal(0);
+  readonly overDueFilter = signal<boolean | null>(null);
   error = '';
   readonly statusOptions: Array<{ value: string; label: string }> = [
     { value: '', label: 'Todos os status' },
@@ -46,9 +47,10 @@ export class TaskList implements OnInit {
   }
 
   loadTasks(): void {
-
     this.loading.set(true);
     this.error = '';
+
+    const overDue = this.overDueFilter();
 
     this.taskService
       .list({
@@ -57,6 +59,7 @@ export class TaskList implements OnInit {
         status: (this.filters.status || undefined) as TaskStatus | undefined,
         category: (this.filters.category || undefined) as TaskCategory | undefined,
         title: this.filters.title,
+        overdue: overDue === true ? true : undefined,
       })
       .subscribe({
         next: (page) => {
@@ -73,6 +76,12 @@ export class TaskList implements OnInit {
 
   clearFilters(): void {
     this.filters = { title: '', status: '', category: '' };
+    this.overDueFilter.set(null);
+    this.loadTasks();
+  }
+
+  onOverDueFilterChange(value: string): void {
+    this.overDueFilter.set(value === 'true' ? true : null);
     this.loadTasks();
   }
 
@@ -187,5 +196,47 @@ export class TaskList implements OnInit {
     };
 
     return map[category] ?? category;
+  }
+
+  isTaskOverdue(task: Task): boolean {
+    if (!task.dueDate || task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED') {
+      return false;
+    }
+
+    const dueDate = this.parseDate(task.dueDate);
+    if (!dueDate) {
+      return false;
+    }
+
+    return dueDate.getTime() < Date.now();
+  }
+
+  formatDueDate(value?: string | null): string {
+    if (!value) {
+      return 'Sem data';
+    }
+
+    const dueDate = this.parseDate(value);
+    if (!dueDate) {
+      return value;
+    }
+
+    const hours = String(dueDate.getHours()).padStart(2, '0');
+    const minutes = String(dueDate.getMinutes()).padStart(2, '0');
+    const day = String(dueDate.getDate()).padStart(2, '0');
+    const month = String(dueDate.getMonth() + 1).padStart(2, '0');
+    const year = dueDate.getFullYear();
+
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
+  }
+
+  private parseDate(value: string): Date | null {
+    const normalized = value.trim();
+    if (!normalized) {
+      return null;
+    }
+
+    const parsed = new Date(normalized.includes(' ') ? normalized.replace(' ', 'T') : normalized);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 }

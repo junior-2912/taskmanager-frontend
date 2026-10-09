@@ -39,6 +39,11 @@
         <span>Concluídas</span>
         <strong>{{ finishedTasks }}</strong>
       </article>
+
+      <article class="stat-card urgent">
+        <span>Atrasadas</span>
+        <strong>{{ overdueTasks }}</strong>
+      </article>
     </div>
 
     <section class="task-section">
@@ -54,7 +59,7 @@
       } @else {
         <div class="recent-list">
           @for (task of recentTasks; track task.id) {
-            <article class="task-card">
+            <article class="task-card" [class.overdue-card]="isTaskOverdue(task)">
               <div class="task-card-top">
                 <h3>{{ task.title }}</h3>
                 <span class="badge status-{{ task.taskStatus }}">{{ statusLabels[task.taskStatus] }}</span>
@@ -63,8 +68,8 @@
               <p>{{ task.description || 'Sem descrição adicional.' }}</p>
 
               <div class="task-meta">
-                <span>{{ task.taskCategory }}</span>
-                <span>Entrega: {{ task.dueDate || 'Sem data' }}</span>
+                <span>{{ getCategoryLabel(task.taskCategory) }}</span>
+                <span class="due-pill">Entrega: {{ formatDueDate(task.dueDate) }}</span>
               </div>
             </article>
           }

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Task, TaskStatus } from '../../core/models/task.model';
+import { Task, TaskCategory, TaskStatus } from '../../core/models/task.model';
 import { TaskService } from '../../core/services/task';
-// TODO - Fix the bug 
+
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, RouterLink],
@@ -44,8 +44,56 @@ export class Dashboard implements OnInit {
     return this.tasks().filter((task) => task.taskStatus === 'FINISHED').length;
   }
 
+  get overdueTasks(): number {
+    return this.tasks().filter((task) => this.isTaskOverdue(task)).length;
+  }
+
   get recentTasks(): Task[] {
     return this.tasks().slice(0, 3);
+  }
+
+  getCategoryLabel(category: TaskCategory): string {
+    const map: Record<TaskCategory, string> = {
+      WORK: 'Trabalho',
+      PERSONAL: 'Pessoal',
+      IMPORTANT: 'Importante',
+      STUDY: 'Estudos',
+      OTHER: 'Outros',
+    };
+
+    return map[category] ?? category;
+  }
+
+  formatDueDate(value?: string | null): string {
+    if (!value) {
+      return 'Sem data';
+    }
+
+    const parsed = new Date(value.includes(' ') ? value.replace(' ', 'T') : value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+
+    const hours = String(parsed.getHours()).padStart(2, '0');
+    const minutes = String(parsed.getMinutes()).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const year = parsed.getFullYear();
+
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
+  }
+
+  isTaskOverdue(task: Task): boolean {
+    if (!task.dueDate || task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED') {
+      return false;
+    }
+
+    const dueDate = new Date(task.dueDate.includes(' ') ? task.dueDate.replace(' ', 'T') : task.dueDate);
+    if (Number.isNaN(dueDate.getTime())) {
+      return false;
+    }
+
+    return dueDate.getTime() < Date.now();
   }
 
   private loadDashboard(): void {

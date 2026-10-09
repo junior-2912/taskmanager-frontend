@@ -32,6 +32,14 @@
       </select>
     </label>
 
+    <label class="field">
+      <span>Prazo</span>
+      <select [value]="overDueFilter() === true ? 'true' : 'all'" (change)="onOverDueFilterChange($any($event.target).value)">
+        <option value="all">Todas as tarefas</option>
+        <option value="true">Somente atrasadas</option>
+      </select>
+    </label>
+
     <button type="button" class="secondary-button" (click)="clearFilters()">Limpar filtros</button>
   </div>
 
@@ -56,19 +64,25 @@
     } @else {
       <div class="task-list">
         @for (task of tasks(); track task.id) {
-          <article class="task-item">
+          <article class="task-item" [class.overdue-item]="isTaskOverdue(task)">
             <div class="task-header">
               <div>
                 <span class="task-category">{{ getCategoryLabel(task.taskCategory) }}</span>
                 <h2>{{ task.title }}</h2>
               </div>
-              <span class="badge status-{{ task.taskStatus }}">{{ getStatusLabel(task.taskStatus) }}</span>
+
+              <div class="task-badges">
+                <span class="badge status-{{ task.taskStatus }}">{{ getStatusLabel(task.taskStatus) }}</span>
+                @if (isTaskOverdue(task)) {
+                  <span class="badge overdue-badge">Atrasada</span>
+                }
+              </div>
             </div>
 
             <p>{{ task.description || 'Sem descrição informada.' }}</p>
 
             <div class="task-footer">
-              <span>Entrega: {{ task.dueDate || 'Sem data' }}</span>
+              <span class="delivery-pill">Entrega: {{ formatDueDate(task.dueDate) }}</span>
 
               <div class="task-actions">
                 <a class="small-button" [routerLink]="['/tasks', task.id, 'edit']">Editar</a>

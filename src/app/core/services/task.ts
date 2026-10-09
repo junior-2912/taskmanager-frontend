@@ -23,6 +23,7 @@ export class TaskService {
     status?: TaskStatus;
     category?: TaskCategory;
     title?: string;
+    overdue?: boolean;
   }): Observable<TaskPage> {
     let params = new HttpParams();
 
@@ -39,6 +40,10 @@ export class TaskService {
 
     if (filters?.title?.trim()) {
       params = params.set('title', filters.title.trim());
+    }
+
+    if (filters?.overdue === true) {
+      params = params.set('overdue', 'true');
     }
 
     return this.http.get<TaskPage>(this.apiUrl, { params });

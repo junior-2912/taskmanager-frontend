@@ -17,6 +17,8 @@ export class TaskForm implements OnInit {
   loading = signal(false);
   submitError = '';
   successMessage = '';
+  readonly todayValue = this.getLocalDateString(new Date());
+  readonly terminalStatuses: TaskStatus[] = ['FINISHED', 'CANCELED'];
 
   readonly categoryOptions: Array<{ value: TaskCategory; label: string }> = [
     { value: 'WORK', label: 'Trabalho' },
@@ -94,6 +96,18 @@ export class TaskForm implements OnInit {
       return;
     }
 
+    const dueDateValue = this.form.value.dueDate as string | null;
+    if (this.isDueDatePast(dueDateValue)) {
+      this.form.get('dueDate')?.markAsTouched();
+      this.submitError = 'A data de entrega não pode estar no passado.';
+      return;
+    }
+
+    if (this.isTaskLocked() && !this.isTerminalStatus(this.form.value.taskStatus as TaskStatus)) {
+      this.submitError = 'Não é possível alterar o status de uma tarefa concluída ou cancelada.';
+      return;
+    }
+
     this.loading.set(true);
     this.submitError = '';
     this.successMessage = '';
@@ -160,6 +174,65 @@ export class TaskForm implements OnInit {
     }, 400);
   }
 
+  isDueDatePast(value: string | null | undefined): boolean {
+    if (!value || !value.trim()) {
+      return false;
+    }
+
+    const selectedDate = this.parseLocalDate(value);
+    if (!selectedDate) {
+      return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return selectedDate < today;
+  }
+
+  canChangeStatus(status: TaskStatus): boolean {
+    if (!this.isEditing || !this.taskId || !this.form) {
+      return true;
+    }
+
+    const currentStatus = this.form.get('taskStatus')?.value as TaskStatus | undefined;
+    if (this.isTerminalStatus(currentStatus)) {
+      return false;
+    }
+
+    return !this.isTerminalStatus(status);
+  }
+
+  isTaskLocked(): boolean {
+    if (!this.isEditing || !this.taskId) {
+      return false;
+    }
+
+    const currentStatus = this.form.get('taskStatus')?.value as TaskStatus | undefined;
+    return this.isTerminalStatus(currentStatus);
+  }
+
+  private isTerminalStatus(status?: TaskStatus | null): boolean {
+    return status === 'FINISHED' || status === 'CANCELED';
+  }
+
+  private parseLocalDate(value: string): Date | null {
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    const parsed = new Date(year, month - 1, day);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private getLocalDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   get fieldError(): string {
     const titleControl = this.form.get('title');
     const dueDateControl = this.form.get('dueDate');
@@ -174,6 +247,10 @@ export class TaskForm implements OnInit {
 
     if (dueDateControl?.touched && dueDateControl.hasError('required')) {
       return 'Data de entrega obrigatória.';
+    }
+
+    if (dueDateControl?.touched && this.isDueDatePast(dueDateControl.value)) {
+      return 'Data de entrega não pode estar no passado.';
     }
 
     return '';
