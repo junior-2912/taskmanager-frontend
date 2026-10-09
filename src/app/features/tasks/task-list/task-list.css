@@ -94,6 +94,13 @@ h1 {
   color: var(--muted);
 }
 
+.warning-box {
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--maroon-900);
+  background: #fff3cd;
+}
+
 .task-list {
   display: grid;
   gap: 18px;

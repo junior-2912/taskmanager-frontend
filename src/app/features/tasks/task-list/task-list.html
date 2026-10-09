@@ -53,6 +53,10 @@
       <button type="button" class="secondary-button" (click)="loadTasks()">Tentar novamente</button>
     </div>
   } @else {
+    @if (completionWarning) {
+      <div class="warning-box" role="status" aria-live="polite">{{ completionWarning }}</div>
+    }
+
     <div class="results-bar">
       <strong>{{ totalItems() }} tarefas encontradas</strong>
     </div>

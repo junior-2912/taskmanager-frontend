@@ -8,8 +8,6 @@
     <a class="secondary-button" routerLink="/tasks">Voltar</a>
   </header>
 
-  
-
   @if (loading()) {
     <div class="state-card">
       <p>Carregando dados da tarefa...</p>
@@ -53,8 +51,11 @@
       </div>
 
       <label class="field">
-        <span>Data de entrega *</span>
-        <input type="date" formControlName="dueDate" [min]="todayValue" />
+        <span>Data e hora de entrega *</span>
+        <input type="datetime-local" formControlName="dueDate" />
+        @if (fieldError) {
+          <small class="error-text">{{ fieldError }}</small>
+        }
       </label>
 
       @if (submitError) {

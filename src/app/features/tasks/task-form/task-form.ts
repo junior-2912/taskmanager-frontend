@@ -17,7 +17,6 @@ export class TaskForm implements OnInit {
   loading = signal(false);
   submitError = '';
   successMessage = '';
-  readonly todayValue = this.getLocalDateString(new Date());
   readonly terminalStatuses: TaskStatus[] = ['FINISHED', 'CANCELED'];
 
   readonly categoryOptions: Array<{ value: TaskCategory; label: string }> = [
@@ -74,7 +73,7 @@ export class TaskForm implements OnInit {
           description: task.description ?? '',
           taskCategory: task.taskCategory,
           taskStatus: task.taskStatus,
-          dueDate: task.dueDate ?? '',
+          dueDate: this.formatDateTimeInput(task.dueDate),
         });
 
         console.log('ANTES DO LOADING FALSE');
@@ -99,7 +98,7 @@ export class TaskForm implements OnInit {
     const dueDateValue = this.form.value.dueDate as string | null;
     if (this.isDueDatePast(dueDateValue)) {
       this.form.get('dueDate')?.markAsTouched();
-      this.submitError = 'A data de entrega não pode estar no passado.';
+      this.submitError = 'A data e hora de entrega não podem estar no passado.';
       return;
     }
 
@@ -115,7 +114,7 @@ export class TaskForm implements OnInit {
     const payload = {
       title: this.form.value.title ?? '',
       description: this.form.value.description ?? '',
-      dueDate: this.form.value.dueDate ?? null,
+      dueDate: this.form.value.dueDate,
       taskCategory: this.form.value.taskCategory as TaskCategory,
     };
 
@@ -179,15 +178,12 @@ export class TaskForm implements OnInit {
       return false;
     }
 
-    const selectedDate = this.parseLocalDate(value);
-    if (!selectedDate) {
+    const selectedDateTime = new Date(value);
+    if (Number.isNaN(selectedDateTime.getTime())) {
       return false;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return selectedDate < today;
+    return selectedDateTime.getTime() < Date.now();
   }
 
   canChangeStatus(status: TaskStatus): boolean {
@@ -216,21 +212,8 @@ export class TaskForm implements OnInit {
     return status === 'FINISHED' || status === 'CANCELED';
   }
 
-  private parseLocalDate(value: string): Date | null {
-    const [year, month, day] = value.split('-').map((part) => Number(part));
-    if (!year || !month || !day) {
-      return null;
-    }
-
-    const parsed = new Date(year, month - 1, day);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  }
-
-  private getLocalDateString(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  private formatDateTimeInput(value?: string | null): string {
+    return value?.trim().replace(' ', 'T').slice(0, 16) ?? '';
   }
 
   get fieldError(): string {
@@ -246,11 +229,11 @@ export class TaskForm implements OnInit {
     }
 
     if (dueDateControl?.touched && dueDateControl.hasError('required')) {
-      return 'Data de entrega obrigatória.';
+      return 'Data e hora de entrega obrigatórias.';
     }
 
     if (dueDateControl?.touched && this.isDueDatePast(dueDateControl.value)) {
-      return 'Data de entrega não pode estar no passado.';
+      return 'Data e hora de entrega não podem estar no passado.';
     }
 
     return '';

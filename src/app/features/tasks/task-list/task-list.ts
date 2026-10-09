@@ -17,6 +17,7 @@ export class TaskList implements OnInit {
   totalItems = signal(0);
   readonly overDueFilter = signal<boolean | null>(null);
   error = '';
+  completionWarning = '';
   readonly statusOptions: Array<{ value: string; label: string }> = [
     { value: '', label: 'Todos os status' },
     { value: 'PENDING', label: 'Pendente' },
@@ -49,6 +50,7 @@ export class TaskList implements OnInit {
   loadTasks(): void {
     this.loading.set(true);
     this.error = '';
+    this.completionWarning = '';
 
     const overDue = this.overDueFilter();
 
@@ -87,9 +89,11 @@ export class TaskList implements OnInit {
 
   completeTask(task: Task): void {
     if (task.taskStatus === 'FINISHED') {
+      this.completionWarning = 'Esta tarefa já está concluída.';
       return;
     }
 
+    this.completionWarning = '';
     this.taskService.updateStatus(task.id, 'FINISHED').subscribe({
       next: () => this.loadTasks(),
       error: () => this.error = 'Não foi possível concluir a tarefa.',
@@ -203,12 +207,12 @@ export class TaskList implements OnInit {
       return false;
     }
 
-    const dueDate = this.parseDate(task.dueDate);
-    if (!dueDate) {
+    const parsedDueDate = this.parseDate(task.dueDate);
+    if (!parsedDueDate) {
       return false;
     }
 
-    return dueDate.getTime() < Date.now();
+    return parsedDueDate.getTime() < Date.now();
   }
 
   formatDueDate(value?: string | null): string {

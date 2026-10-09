@@ -88,12 +88,12 @@ export class Dashboard implements OnInit {
       return false;
     }
 
-    const dueDate = new Date(task.dueDate.includes(' ') ? task.dueDate.replace(' ', 'T') : task.dueDate);
-    if (Number.isNaN(dueDate.getTime())) {
+    const parsedDueDate = new Date(task.dueDate.includes(' ') ? task.dueDate.replace(' ', 'T') : task.dueDate);
+    if (Number.isNaN(parsedDueDate.getTime())) {
       return false;
     }
 
-    return dueDate.getTime() < Date.now();
+    return parsedDueDate.getTime() < Date.now();
   }
 
   private loadDashboard(): void {

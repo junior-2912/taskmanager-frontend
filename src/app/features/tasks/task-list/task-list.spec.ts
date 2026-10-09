@@ -52,6 +52,22 @@ describe('TaskList', () => {
     expect(component.isTaskOverdue(finishedTask)).toBeFalse();
     expect(component.isTaskOverdue(canceledTask)).toBeFalse();
   });
+
+  it('should warn when attempting to complete an already finished task', () => {
+    const updateStatus = jasmine.createSpy('updateStatus');
+    const component = new TaskList({ updateStatus } as any);
+    const task: Task = {
+      id: 1,
+      title: 'Tarefa concluída',
+      taskStatus: 'FINISHED',
+      taskCategory: 'WORK',
+    };
+
+    component.completeTask(task);
+
+    expect(component.completionWarning).toBe('Esta tarefa já está concluída.');
+    expect(updateStatus).not.toHaveBeenCalled();
+  });
 });
 
 describe('TaskService', () => {
@@ -73,7 +89,7 @@ describe('TaskService', () => {
 });
 
 describe('TaskForm', () => {
-  it('should reject past due dates based on the same backend business rule', () => {
+  it('should reject past due dates and times', () => {
     const component = new TaskForm(
       new FormBuilder(),
       {} as any,
@@ -84,8 +100,8 @@ describe('TaskForm', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
-    expect(component.isDueDatePast(yesterday.toISOString().slice(0, 10))).toBeTrue();
-    expect(component.isDueDatePast(new Date().toISOString().slice(0, 10))).toBeFalse();
+    expect(component.isDueDatePast(yesterday.toISOString().slice(0, 16))).toBeTrue();
+    expect(component.isDueDatePast(new Date(Date.now() + 60000).toISOString().slice(0, 16))).toBeFalse();
   });
 
   it('should block status changes on tasks already finished or canceled', () => {
@@ -104,6 +120,18 @@ describe('TaskForm', () => {
 
     component.form.patchValue({ taskStatus: 'CANCELED' });
     expect(component.canChangeStatus('IN_PROGRESS')).toBeFalse();
+  });
+
+  it('should require the date-time value under dueDate', () => {
+    const component = new TaskForm(
+      new FormBuilder(),
+      {} as any,
+      { snapshot: { paramMap: { get: () => null } } } as any,
+      { navigateByUrl: jasmine.createSpy('navigateByUrl') } as any,
+    );
+
+    expect(component.form.get('dueDate')?.hasError('required')).toBeTrue();
+    expect(component.form.get('datetime')).toBeNull();
   });
 });
 
