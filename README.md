@@ -1,59 +1,125 @@
-# Frontend
+# Task Manager Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.1.
+A task management web application built with Angular and TypeScript, integrated with a REST API developed using Spring Boot.
 
-## Development server
+The application provides a dashboard and task management interface designed to help organize daily activities, track progress and identify overdue tasks.
 
-To start a local development server, run:
+**Backend API:** [task-manager-api](https://github.com/junior-2912/task-manager-api)
+
+## Features
+
+* Dashboard with task overview.
+* Task listing and visualization.
+* Create and edit tasks.
+* Update task statuses.
+* Delete tasks, subject to backend business rules.
+* Search and filter tasks.
+* Display task categories, statuses and due dates.
+* Identify overdue tasks.
+* Responsive interface for different screen sizes.
+
+## Demo
+
+Check out the Task Manager in action:
+![Demonstração do Task Manager](docs/demo-frontend.gif)
+
+## Technologies
+
+* **Angular 22**
+* **TypeScript**
+* **HTML5**
+* **CSS3**
+* **Angular Router**
+* **Angular Forms**
+* **Angular HttpClient**
+* **RxJS**
+* **npm**
+
+## Application Structure
+
+The application uses Angular standalone components and organizes its main screens through routing.
+
+| Route             | Description           |
+| ----------------- | --------------------- |
+| `/`               | Dashboard             |
+| `/tasks`          | Task listing          |
+| `/tasks/new`      | Create a task         |
+| `/tasks/:id/edit` | Edit an existing task |
+
+The frontend communicates with the backend through HTTP requests. Task data is retrieved and persisted by the REST API rather than being stored exclusively in the browser.
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have installed:
+
+* Node.js compatible with the installed Angular version.
+* npm.
+* Git.
+* The [Task Manager API](https://github.com/junior-2912/task-manager-api) running locally.
+
+### 1. Clone the repository
 
 ```bash
-ng serve
+git clone https://github.com/junior-2912/taskmanager-frontend.git
+cd taskmanager-frontend
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 2. Install dependencies
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 3. Configure the backend URL
+
+Make sure the frontend's HTTP service points to the running backend API.
+
+For local development, the backend base URL is expected to be:
+
+```text
+http://localhost:8080
+```
+
+If the backend is running on a different host or port, update the API URL in the frontend configuration.
+
+The backend must also allow requests from the frontend origin through its CORS configuration.
+
+### 4. Start the development server
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+Open the application at:
 
-To build the project run:
+`http://localhost:4200`
+
+The development server supports live reloading when source files change.
+
+## Build
+
+To generate a production build:
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The generated build artifacts are placed in the `dist/` directory.
 
-## Running unit tests
+## Tests
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+To run the configured frontend tests:
 
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
+## Related Project
 
-For end-to-end (e2e) testing, run:
+Backend API: [junior-2912/task-manager-api](https://github.com/junior-2912/task-manager-api)
 
-```bash
-ng e2e
-```
+## Author
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Developed by Junior ([junior-2912](https://github.com/junior-2912)) as part of a personal full-stack learning project focused on integrating an Angular frontend with a Java and Spring Boot REST API.

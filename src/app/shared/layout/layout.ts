@@ -8,15 +8,9 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   templateUrl: './layout.html',
 })
 export class Layout {
-  isDarkTheme = false;
-
   readonly navItems = [
     { label: 'Dashboard', path: '/', exact: true },
     { label: 'Tarefas', path: '/tasks', exact: false },
     { label: 'Nova tarefa', path: '/tasks/new', exact: false },
   ];
-
-  toggleTheme(): void {
-    this.isDarkTheme = !this.isDarkTheme;
-  }
 }

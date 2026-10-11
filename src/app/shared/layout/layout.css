@@ -17,20 +17,6 @@
   color: var(--text);
 }
 
-.app-shell.dark-theme {
-  --bg-page: #140d12;
-  --bg-surface: rgba(38, 18, 24, 0.82);
-  --bg-surface-strong: rgba(52, 22, 31, 0.96);
-  --bg-sidebar: linear-gradient(180deg, #2c121a 0%, #180d12 100%);
-  --border-soft: rgba(240, 181, 191, 0.18);
-  --text: #fff1f3;
-  --muted: #d9b6be;
-  --sidebar-text: #fff5f7;
-  --sidebar-muted: rgba(255, 245, 247, 0.74);
-  --shadow-soft: 0 22px 48px rgba(28, 10, 16, 0.5);
-  background: linear-gradient(180deg, var(--bg-page) 0%, #1d1015 100%);
-}
-
 .sidebar {
   position: sticky;
   top: 0;
@@ -97,19 +83,6 @@
   color: #fff;
 }
 
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--sidebar-text);
-  padding: 10px 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .sidebar-footer {
   margin-top: auto;
   background: rgba(255, 255, 255, 0.05);
@@ -132,60 +105,6 @@
 .main-content {
   padding: 28px;
   min-height: 100vh;
-}
-
-.app-shell.dark-theme .task-section,
-.app-shell.dark-theme .task-form,
-.app-shell.dark-theme .task-item,
-.app-shell.dark-theme .task-card,
-.app-shell.dark-theme .filters-panel,
-.app-shell.dark-theme .stat-card,
-.app-shell.dark-theme .state-card,
-.app-shell.dark-theme .empty-card,
-.app-shell.dark-theme .sidebar-footer {
-  background: var(--bg-surface);
-  border-color: var(--border-soft);
-  box-shadow: var(--shadow-soft);
-}
-
-.app-shell.dark-theme .stat-card.highlight {
-  background: linear-gradient(135deg, rgba(126, 35, 52, 0.42), rgba(79, 28, 38, 0.75));
-}
-
-.app-shell.dark-theme .field input,
-.app-shell.dark-theme .field select,
-.app-shell.dark-theme .field textarea,
-.app-shell.dark-theme .task-form input,
-.app-shell.dark-theme .task-form textarea,
-.app-shell.dark-theme .task-form select {
-  background: rgba(22, 11, 15, 0.9);
-  border-color: var(--border-soft);
-  color: var(--text);
-}
-
-.app-shell.dark-theme .secondary-button {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
-}
-
-.app-shell.dark-theme .task-category,
-.app-shell.dark-theme .badge {
-  filter: brightness(1.08);
-}
-
-.app-shell.dark-theme .nav-link {
-  color: rgba(255, 244, 246, 0.78);
-}
-
-.app-shell.dark-theme .nav-link:hover,
-.app-shell.dark-theme .nav-link.active {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.app-shell.dark-theme .theme-toggle {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 225, 230, 0.12);
 }
 
 @media (max-width: 800px) {
