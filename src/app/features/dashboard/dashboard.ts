@@ -33,15 +33,15 @@ export class Dashboard implements OnInit {
   }
 
   get pendingTasks(): number {
-    return this.tasks().filter((task) => task.taskStatus === 'PENDING').length;
+    return this.tasks().filter((task) => (task.status ?? task.taskStatus) === 'PENDING').length;
   }
 
   get inProgressTasks(): number {
-    return this.tasks().filter((task) => task.taskStatus === 'IN_PROGRESS').length;
+    return this.tasks().filter((task) => (task.status ?? task.taskStatus) === 'IN_PROGRESS').length;
   }
 
   get finishedTasks(): number {
-    return this.tasks().filter((task) => task.taskStatus === 'FINISHED').length;
+    return this.tasks().filter((task) => (task.status ?? task.taskStatus) === 'FINISHED').length;
   }
 
   get overdueTasks(): number {
@@ -84,7 +84,8 @@ export class Dashboard implements OnInit {
   }
 
   isTaskOverdue(task: Task): boolean {
-    if (!task.dueDate || task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED') {
+    const status = task.status ?? task.taskStatus;
+    if (!task.dueDate || status === 'FINISHED' || status === 'CANCELED') {
       return false;
     }
 

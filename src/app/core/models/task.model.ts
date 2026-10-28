@@ -5,9 +5,11 @@ export interface Task {
   id: number;
   title: string;
   description?: string | null;
-  taskStatus: TaskStatus;
+  status: TaskStatus;
   dueDate?: string | null;
-  taskCategory: TaskCategory;
+  category: TaskCategory;
+  taskStatus?: TaskStatus;
+  taskCategory?: TaskCategory;
 }
 
 export interface TaskPage {
@@ -24,14 +26,16 @@ export interface TaskCreateRequest {
   title: string;
   description?: string | null;
   dueDate?: string | null;
-  taskCategory: TaskCategory;
+  category: TaskCategory;
+  taskCategory?: TaskCategory;
 }
 
 export interface TaskUpdateRequest {
   title: string;
   description?: string | null;
   dueDate?: string | null;
-  taskCategory: TaskCategory;
+  category: TaskCategory;
+  taskCategory?: TaskCategory;
 }
 
 export interface TaskStatusRequest {

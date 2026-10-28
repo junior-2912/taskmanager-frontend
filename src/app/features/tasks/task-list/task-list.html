@@ -71,12 +71,12 @@
           <article class="task-item" [class.overdue-item]="isTaskOverdue(task)">
             <div class="task-header">
               <div>
-                <span class="task-category">{{ getCategoryLabel(task.taskCategory) }}</span>
+                <span class="task-category">{{ getCategoryLabel(task.category ?? task.taskCategory) }}</span>
                 <h2>{{ task.title }}</h2>
               </div>
 
               <div class="task-badges">
-                <span class="badge status-{{ task.taskStatus }}">{{ getStatusLabel(task.taskStatus) }}</span>
+                <span class="badge status-{{ task.status ?? task.taskStatus }}">{{ getStatusLabel(task.status ?? task.taskStatus) }}</span>
                 @if (isTaskOverdue(task)) {
                   <span class="badge overdue-badge">Atrasada</span>
                 }

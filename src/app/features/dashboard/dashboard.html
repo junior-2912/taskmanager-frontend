@@ -62,13 +62,13 @@
             <article class="task-card" [class.overdue-card]="isTaskOverdue(task)">
               <div class="task-card-top">
                 <h3>{{ task.title }}</h3>
-                <span class="badge status-{{ task.taskStatus }}">{{ statusLabels[task.taskStatus] }}</span>
+                <span class="badge status-{{ task.status ?? task.taskStatus }}">{{ statusLabels[task.status ?? task.taskStatus] }}</span>
               </div>
 
               <p>{{ task.description || 'Sem descrição adicional.' }}</p>
 
               <div class="task-meta">
-                <span>{{ getCategoryLabel(task.taskCategory) }}</span>
+                <span>{{ getCategoryLabel(task.category ?? task.taskCategory) }}</span>
                 <span class="due-pill">Entrega: {{ formatDueDate(task.dueDate) }}</span>
               </div>
             </article>

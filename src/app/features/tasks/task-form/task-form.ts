@@ -45,8 +45,8 @@ export class TaskForm implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
-      taskCategory: ['WORK' as TaskCategory, Validators.required],
-      taskStatus: ['PENDING' as TaskStatus, Validators.required],
+      category: ['WORK' as TaskCategory, Validators.required],
+      status: ['PENDING' as TaskStatus, Validators.required],
       dueDate: ['', Validators.required],
     });
 
@@ -58,7 +58,6 @@ export class TaskForm implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("TaskId: ", this.taskId);
     if (!this.taskId) {
       return;
     }
@@ -66,17 +65,14 @@ export class TaskForm implements OnInit {
     this.loading.set(true);
     this.taskService.getById(this.taskId).subscribe({
       next: (task) => {
-        console.log('ANTES DO PATCH');
-
         this.form.patchValue({
           title: task.title,
           description: task.description ?? '',
-          taskCategory: task.taskCategory,
-          taskStatus: task.taskStatus,
+          category: task.category ?? task.taskCategory ?? 'WORK',
+          status: task.status ?? task.taskStatus ?? 'PENDING',
           dueDate: this.formatDateTimeInput(task.dueDate),
         });
 
-        console.log('ANTES DO LOADING FALSE');
         this.loading.set(false);
       },
       error: (err) => {
@@ -102,7 +98,7 @@ export class TaskForm implements OnInit {
       return;
     }
 
-    if (this.isTaskLocked() && !this.isTerminalStatus(this.form.value.taskStatus as TaskStatus)) {
+    if (this.isTaskLocked() && !this.isTerminalStatus(this.form.value.status as TaskStatus)) {
       this.submitError = 'Não é possível alterar o status de uma tarefa concluída ou cancelada.';
       return;
     }
@@ -115,14 +111,14 @@ export class TaskForm implements OnInit {
       title: this.form.value.title ?? '',
       description: this.form.value.description ?? '',
       dueDate: this.form.value.dueDate,
-      taskCategory: this.form.value.taskCategory as TaskCategory,
+      category: this.form.value.category as TaskCategory,
     };
 
     if (this.taskId) {
       this.taskService.update(this.taskId, payload).subscribe({
         next: (updatedTask) => {
-          const selectedStatus = this.form.value.taskStatus as TaskStatus;
-          const currentStatus = updatedTask.taskStatus ?? 'PENDING';
+          const selectedStatus = this.form.value.status as TaskStatus;
+          const currentStatus = updatedTask.status ?? updatedTask.taskStatus ?? 'PENDING';
 
           if (selectedStatus !== currentStatus) {
             this.taskService.updateStatus(this.taskId!, selectedStatus).subscribe({
@@ -144,7 +140,7 @@ export class TaskForm implements OnInit {
 
     this.taskService.create(payload).subscribe({
       next: (createdTask) => {
-        const status = this.form.value.taskStatus as TaskStatus;
+        const status = this.form.value.status as TaskStatus;
 
         if (status !== 'PENDING') {
           this.taskService.updateStatus(createdTask.id, status).subscribe({
@@ -191,7 +187,7 @@ export class TaskForm implements OnInit {
       return true;
     }
 
-    const currentStatus = this.form.get('taskStatus')?.value as TaskStatus | undefined;
+    const currentStatus = this.form.get('status')?.value as TaskStatus | undefined;
     if (this.isTerminalStatus(currentStatus)) {
       return false;
     }
@@ -204,7 +200,7 @@ export class TaskForm implements OnInit {
       return false;
     }
 
-    const currentStatus = this.form.get('taskStatus')?.value as TaskStatus | undefined;
+    const currentStatus = this.form.get('status')?.value as TaskStatus | undefined;
     return this.isTerminalStatus(currentStatus);
   }
 

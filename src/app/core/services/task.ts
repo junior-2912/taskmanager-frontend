@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   Task,
   TaskCategory,
@@ -46,19 +47,36 @@ export class TaskService {
       params = params.set('overdue', 'true');
     }
 
-    return this.http.get<TaskPage>(this.apiUrl, { params });
+    return this.http.get<TaskPage>(this.apiUrl, { params }).pipe(
+      map((page) => ({
+        ...page,
+        content: (page.content ?? []).map((task) => this.normalizeTask(task)),
+      })),
+    );
   }
 
   getById(id: number): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+    return this.http.get<Task>(`${this.apiUrl}/${id}`).pipe(map((task) => this.normalizeTask(task)));
   }
 
   create(task: TaskCreateRequest): Observable<Task> {
-    return this.http.post<Task>(this.apiUrl, task);
+    const payload = {
+      ...task,
+      category: task.category ?? task.taskCategory,
+      taskCategory: undefined,
+    };
+
+    return this.http.post<Task>(this.apiUrl, payload).pipe(map((createdTask) => this.normalizeTask(createdTask)));
   }
 
   update(id: number, task: TaskUpdateRequest): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
+    const payload = {
+      ...task,
+      category: task.category ?? task.taskCategory,
+      taskCategory: undefined,
+    };
+
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, payload).pipe(map((updatedTask) => this.normalizeTask(updatedTask)));
   }
 
   delete(id: number): Observable<void> {
@@ -67,6 +85,23 @@ export class TaskService {
 
   updateStatus(id: number, status: TaskStatus): Observable<Task> {
     const payload: TaskStatusRequest = { status };
-    return this.http.patch<Task>(`${this.apiUrl}/${id}/status`, payload);
+    return this.http.patch<Task>(`${this.apiUrl}/${id}/status`, payload).pipe(map((updatedTask) => this.normalizeTask(updatedTask)));
+  }
+
+  private normalizeTask(task: Partial<Task> | null | undefined): Task {
+    const status = task?.status ?? task?.taskStatus ?? 'PENDING';
+    const category = task?.category ?? task?.taskCategory ?? 'WORK';
+
+    return {
+      ...(task ?? {}),
+      id: task?.id ?? 0,
+      title: task?.title ?? '',
+      description: task?.description ?? null,
+      status,
+      category,
+      dueDate: task?.dueDate ?? null,
+      taskStatus: status,
+      taskCategory: category,
+    } as Task;
   }
 }

@@ -33,7 +33,7 @@
       <div class="split-row">
         <label class="field">
           <span>Categoria *</span>
-          <select formControlName="taskCategory">
+          <select formControlName="category">
             @for (option of categoryOptions; track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }
@@ -42,7 +42,7 @@
 
         <label class="field">
           <span>Status</span>
-          <select formControlName="taskStatus" [disabled]="isTaskLocked()">
+          <select formControlName="status" [disabled]="isTaskLocked()">
             @for (option of statusOptions; track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }

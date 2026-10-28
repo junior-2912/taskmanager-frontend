@@ -88,7 +88,7 @@ export class TaskList implements OnInit {
   }
 
   completeTask(task: Task): void {
-    if (task.taskStatus === 'FINISHED') {
+    if (task.status === 'FINISHED') {
       this.completionWarning = 'Esta tarefa já está concluída.';
       return;
     }
@@ -124,7 +124,7 @@ export class TaskList implements OnInit {
   }
 
   private canDeleteTask(task: Task): boolean {
-    return task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED';
+    return task.status === 'FINISHED' || task.status === 'CANCELED';
   }
 
   private extractApiErrorMessage(error: unknown): string {
@@ -203,7 +203,7 @@ export class TaskList implements OnInit {
   }
 
   isTaskOverdue(task: Task): boolean {
-    if (!task.dueDate || task.taskStatus === 'FINISHED' || task.taskStatus === 'CANCELED') {
+    if (!task.dueDate || task.status === 'FINISHED' || task.status === 'CANCELED') {
       return false;
     }
 

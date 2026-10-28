@@ -13,8 +13,8 @@ describe('TaskList', () => {
       id: 1,
       title: 'Tarefa pendente',
       description: 'Descrição',
-      taskStatus: 'PENDING',
-      taskCategory: 'WORK',
+      status: 'PENDING',
+      category: 'WORK',
     };
 
     const message = component['getDeleteErrorMessage'](task, { error: { message: 'Task cannot be deleted while status is PENDING' } });
@@ -31,21 +31,21 @@ describe('TaskList', () => {
       id: 2,
       title: 'Tarefa atrasada',
       description: 'Prazo vencido',
-      taskStatus: 'PENDING',
+      status: 'PENDING',
       dueDate: new Date(now.getTime() - 60000).toISOString(),
-      taskCategory: 'WORK',
+      category: 'WORK',
     };
 
     const finishedTask: Task = {
       ...overdueTask,
       id: 3,
-      taskStatus: 'FINISHED',
+      status: 'FINISHED',
     };
 
     const canceledTask: Task = {
       ...overdueTask,
       id: 4,
-      taskStatus: 'CANCELED',
+      status: 'CANCELED',
     };
 
     expect(component.isTaskOverdue(overdueTask)).toBeTrue();
@@ -59,8 +59,8 @@ describe('TaskList', () => {
     const task: Task = {
       id: 1,
       title: 'Tarefa concluída',
-      taskStatus: 'FINISHED',
-      taskCategory: 'WORK',
+      status: 'FINISHED',
+      category: 'WORK',
     };
 
     component.completeTask(task);
@@ -112,13 +112,13 @@ describe('TaskForm', () => {
       { navigateByUrl: jasmine.createSpy('navigateByUrl') } as any,
     );
 
-    component.form.patchValue({ taskStatus: 'FINISHED' });
+    component.form.patchValue({ status: 'FINISHED' });
     component.isEditing = true;
     component.taskId = 1;
 
     expect(component.canChangeStatus('PENDING')).toBeFalse();
 
-    component.form.patchValue({ taskStatus: 'CANCELED' });
+    component.form.patchValue({ status: 'CANCELED' });
     expect(component.canChangeStatus('IN_PROGRESS')).toBeFalse();
   });
 
@@ -141,10 +141,10 @@ describe('Dashboard', () => {
     const now = new Date();
 
     component.tasks.set([
-      { id: 1, title: 'Atrasada', taskStatus: 'PENDING', dueDate: new Date(now.getTime() - 60000).toISOString(), taskCategory: 'WORK' },
-      { id: 2, title: 'Concluída', taskStatus: 'FINISHED', dueDate: new Date(now.getTime() - 60000).toISOString(), taskCategory: 'WORK' },
-      { id: 3, title: 'Cancelada', taskStatus: 'CANCELED', dueDate: new Date(now.getTime() - 60000).toISOString(), taskCategory: 'WORK' },
-      { id: 4, title: 'No prazo', taskStatus: 'IN_PROGRESS', dueDate: new Date(now.getTime() + 60000).toISOString(), taskCategory: 'WORK' },
+      { id: 1, title: 'Atrasada', status: 'PENDING', dueDate: new Date(now.getTime() - 60000).toISOString(), category: 'WORK' },
+      { id: 2, title: 'Concluída', status: 'FINISHED', dueDate: new Date(now.getTime() - 60000).toISOString(), category: 'WORK' },
+      { id: 3, title: 'Cancelada', status: 'CANCELED', dueDate: new Date(now.getTime() - 60000).toISOString(), category: 'WORK' },
+      { id: 4, title: 'No prazo', status: 'IN_PROGRESS', dueDate: new Date(now.getTime() + 60000).toISOString(), category: 'WORK' },
     ]);
 
     expect(component.overdueTasks).toBe(1);
